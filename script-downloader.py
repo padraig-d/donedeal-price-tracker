@@ -159,8 +159,8 @@ if saved_checker == True:
         keywords = ""
     enginesizeto = search[7]
 
-i = 0
 
+i = 0
 
 url = "https://www.donedeal.ie/cars/"+make+"/"+model+"/"+fueltype+keywords+"start="+str(i*30)+"&"+yearfrom+"&"+yearto+"&"+"engine_from="+enginesizefrom+"&"+"engine_to="+enginesizeto
 
@@ -174,6 +174,7 @@ print("Please wait...")
 
 if os.path.isdir("saved-cars") == False:
     os.mkdir("saved-cars")
+    os.chdir(path + "/saved-cars")
 else:
     os.chdir(path + "/saved-cars")
 
@@ -182,6 +183,7 @@ else:
 
 tags = doc.find("h2", class_="styles__Details-sc-gp61km-12 bSMUto")
 rawads = tags.get_text() 
+
 
 z = 0
 ads = []
@@ -196,8 +198,11 @@ while z < len(rawads):
 ads = "".join(ads) # Gets me exact number of ads for this car
 
 links = []
+i = 0
 while i <= int(ads) // 30:
     
+    url = "https://www.donedeal.ie/cars/"+make+"/"+model+"/"+fueltype+keywords+"start="+str(i*30)+"&"+yearfrom+"&"+yearto+"&"+"engine_from="+enginesizefrom+"&"+"engine_to="+enginesizeto
+
     response = urllib.request.urlopen(url)
     webContent = response.read().decode('UTF-8')
     
@@ -218,7 +223,7 @@ while i <= int(ads) // 30:
 
 i = 0
 
-print("CSV File Name (keep the naming consistent if you want to add to the file")
+print("CSV File Name (keep the naming consistent if you want to add to the file)")
 
 print("Cars tracked:")
 print(os.listdir())
