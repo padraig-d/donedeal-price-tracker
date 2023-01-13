@@ -293,7 +293,10 @@ with open(csv_file, 'a') as f:
 
         if url not in urls:
             writer.writerow(results)
-        print(str(round((i / len(links)) * 100)) + "% " + "Done" )
+        
+        
+        if i % 10 == 0:
+            print(str(round((i / len(links)) * 100)) + "% " + "Done" )
 
         i += 1
 
