@@ -5,124 +5,181 @@ import urllib.request
 import os
 import csv
 
-os.chdir('C:/Users/Patrick#/Desktop/donedeal-script/downloaded-pages')
+path = os.path.dirname(__file__)
+os.chdir(path)
 
 
 # Search Logic
 
-# i = 0
-# while i < 1: 
+saved_checker = ""
 
-    # print("Where would you like to save the data? Input a valid directory")
-    # directory = "r" + str(input())
+print("Do you have a saved search?: Y/N")
 
-#     print("Make")
-#     make = input()
+check = str(input())
 
-#     print("Model")
-#     model = input()
+if check == "N":
+    saved_checker = False
+elif check == "Y":
+    saved_checker = True
 
-#     print("Fuel Type: A = Petrol B = Diesel")
-#     fueltype = "X"
+i = 0
 
-#     while fueltype != "Petrol?" and fueltype != "Diesel?":
-#         fuelchoice = input()
-#         if fuelchoice == "A":
-#             fueltype = "Petrol?"
-#         elif fuelchoice == "B":
-#             fueltype = "Diesel?"
-#         else:
-#             print("Wrong Input")
+if saved_checker == 0:
 
-#     print("Engine Size")
-#     enginesize = input()
+    while i < 1: 
 
-#     print("OPTIONAL: Year From, Leave Blank If No")
-#     yearfrom = "year_from=" + str(input())
+        print("Make")
+        make = input()
 
-#     print("OPTIONAL: Year To, Leave Blank If No")
-#     yearto = "year_to=" + str(input())
+        print("Model")
+        model = input()
 
-#     print("OPTIONAL: Key Words? Suggested: 335i, GTI, M3, etc. One word only.")
-#     keyword = input()
+        print("Fuel Type: A = Petrol B = Diesel")
+        fueltype = "X"
 
-#     if keyword != "":
-#         keywords = "words=" + keyword + "&"
-#     else:
-#         keywords = ""
+        while fueltype != "Petrol?" and fueltype != "Diesel?":
+            fuelchoice = input()
+            if fuelchoice == "A":
+                fueltype = "Petrol?"
+            elif fuelchoice == "B":
+                fueltype = "Diesel?"
+            else:
+                print("Wrong Input")
 
+        print("Engine Size From:")
+        enginesizefrom = input()
 
-#     if yearfrom != "" and yearto == "":
-#          url = "https://www.donedeal.ie/cars/"+make+"/"+model+"?"+keywords+fueltype+"start="+str(i*30)+"&"+yearfrom+"&"+"engine_from="+enginesize
-#     elif yearto != "" and yearfrom == "":
-#         url = "https://www.donedeal.ie/cars/"+make+"/"+model+"?"+keywords+fueltype+"start="+str(i*30)+"&"+yearto+"&"+"engine_from="+enginesize
-#     elif yearfrom != "" and yearto != "":
-#         url = "https://www.donedeal.ie/cars/"+make+"/"+model+"?"+keywords+fueltype+"start="+str(i*30)+"&"+yearfrom+"&"+yearto+"&"+"engine_from="+enginesize
+        print("Engine Size To:")
+        enginesizeto = input()
 
+        print("Year From")
+        yearfrom = "year_from=" + str(input())
 
-#     i += 1
+        print("Year To")
+        yearto = "year_to=" + str(input())
 
+        print("OPTIONAL: Key Words? Suggested: 335i, GTI, M3, etc. One word only.")
+        keyword = input()
 
-#     response = urllib.request.urlopen(url)
-#     webContent = response.read().decode('UTF-8')
+        if keyword != "":
+            keywords = "words=" + keyword + "&"
+        else:
+            keywords = ""
 
-
-#     doc = BeautifulSoup(webContent, 'html.parser')
-
-#     fourohfour = doc.find("h2", class_="styles__Header-sc-dhlpsy-2 knmJSx")
-
-#     if fourohfour == None:
-#         i += 1
-#     else: 
-#         print("You've made an error in your selection, perhaps the make and model are wrong?")      
+        url = "https://www.donedeal.ie/cars/"+make+"/"+model+"/"+fueltype+keywords+"start="+str(i*30)+"&"+yearfrom+"&"+yearto+"&"+"engine_from="+enginesizefrom+"&"+"engine_to="+enginesizeto
 
 
-# if i == 1:
-#     print("DONE")
+        response = urllib.request.urlopen(url)
+        webContent = response.read().decode('UTF-8')
+
+
+        doc = BeautifulSoup(webContent, 'html.parser')
+
+        fourohfour = doc.find("h2", class_="styles__Header-sc-dhlpsy-2 knmJSx")
+
+        if fourohfour == None:
+            i += 1
+        else: 
+            print("You've made an error in your selection, perhaps the make and model are wrong?") 
+     
+
+
+    if i == 1:
+        print("DONE")
+
+    print("Would you like to save your search?: Y/N")
+
+    saving_checker = ""
+    check2 = str(input())
+    if check2 == "Y":
+        saving_checker = True
+    elif check2 == "N":
+        saving_checker = False
+    
+
+    texts = []
+    if saving_checker == True:
+
+        if os.path.isfile("saved-searches.csv") == True:
+            with open("saved-searches.csv", "r") as f:
+                for words in f.readlines():
+                    if words != "\n":
+                        texts.append(words)
+        
+                f.close()
+
+        with open("saved-searches.csv", "a") as f:
+            writer = csv.writer(f)
+            search = [int(len(texts)), make, model, fueltype, enginesizefrom, yearfrom, yearto, enginesizeto, keyword]
+            writer.writerow(search)
 
 i = 0
 
 
+texts = []
+if saved_checker == True:
 
-make = "BMW/"
-model = "3-Series/"
-fueltype = "Petrol?"
-enginesize = "2000"
-yearfrom = "year_from=2002"
-yearto = "year_to=2010"
+    print("Select a search using the number:")
 
-# URL LOGIC --- This will be taken out when program is finished.
 
-name_of_file = "websitehtml_"
-completeName = name_of_file+str(i)+".html"
-url = "https://www.donedeal.ie/cars/"+make+model+fueltype+"start="+str(i*30)+"&"+"engine_from="+enginesize
+    print("---------------------------------------------------------")
 
-if yearfrom != "" and yearto == "":
-    url = "https://www.donedeal.ie/cars/"+make+model+fueltype+"start="+str(i*30)+"&"+yearfrom+"&"+"engine_from="+enginesize
-elif yearto != "" and yearfrom == "":
-    url = "https://www.donedeal.ie/cars/"+make+model+fueltype+"start="+str(i*30)+"&"+yearto+"&"+"engine_from="+enginesize
-elif yearfrom != "" and yearto != "":
-    url = "https://www.donedeal.ie/cars/"+make+model+fueltype+"start="+str(i*30)+"&"+yearfrom+"&"+yearto+"&"+"engine_from="+enginesize
+    with open("saved-searches.csv", "r") as f:
+        for words in f.readlines():
+            if words != "\n":
+                texts.append(words)
+    
+    for searches in texts:
+        print(searches.rstrip())
 
-# Sample URL
-# https://www.donedeal.ie/cars/BMW/3-Series/Diesel?start=30&engine_from=2000
-#                             /Make/Model  /Fuel  /Page     /Engine
+    selection = input()
 
+    i = 0
+
+    while i < len(texts):
+        text = texts[i].split(",")
+
+        if selection == text[0]:
+            search = texts[i].rstrip()
+            i += 20000
+
+        i += 1
+
+    search = search.split(",")
+    
+    
+    print(search)
+    
+    make = search[1]
+    model = search[2]
+    fueltype = search[3]
+    enginesizefrom = search[4]
+    yearfrom = search[5]
+    yearto = search[6]
+    if search[8] != "":
+        keywords = "words=" + search[8] + "&"
+    else:
+        keywords = ""
+    enginesizeto = search[7]
+
+i = 0
+
+
+url = "https://www.donedeal.ie/cars/"+make+"/"+model+"/"+fueltype+keywords+"start="+str(i*30)+"&"+yearfrom+"&"+yearto+"&"+"engine_from="+enginesizefrom+"&"+"engine_to="+enginesizeto
+
+print(url)
 
 response = urllib.request.urlopen(url)
 webContent = response.read().decode('UTF-8')
     
 doc = BeautifulSoup(webContent, 'html.parser')
 
-# os.chdir(directory)
-# os.mkdir("saved-cars")
-# os.chdir("/saved-cars")
 
+if os.path.isdir("saved-cars") == False:
+    os.mkdir("saved-cars")
+else:
+    os.chdir(path + "/saved-cars")
 
-
-
-
-# ------------------------------------------------------------ This is reduntant.
 
 # This block of texts gets me the amount of ads posted for this specific car
 
@@ -146,8 +203,6 @@ while i <= int(ads) // 30:
     
     response = urllib.request.urlopen(url)
     webContent = response.read().decode('UTF-8')
-
-    completeName = name_of_file+str(i)+".html"
     
     doc = BeautifulSoup(webContent, 'html.parser')
 
@@ -168,6 +223,10 @@ i = 0
 
 print("CSV File Name (keep the naming consistent if you want to add to the file")
 
+print("Cars tracked:")
+print(os.listdir())
+
+
 csv_file = input() + ".csv"
 csv_columns = ["Make", "Model", "Year", "Mileage", "Colour", "NCT Expiry", "Price", "URL"]
 
@@ -177,17 +236,15 @@ with open(csv_file, 'a') as f:
     writer = csv.writer(f)
     if os.stat(csv_file).st_size == 0:
         writer.writerow(csv_columns)
-        print("File is empty")
     else:
-        print("File is not empty")
-        filename = open("test.csv", "r")
+        filename = open(csv_file, "r")
         file = csv.DictReader(filename)
         for col in file:
             urls.append(col["URL"])
 
 
 
-    while i < 10: # CHANGE LATER -----> len(links)
+    while i < len(links):
         url = links[i]
 
         response = urllib.request.urlopen(url)
@@ -253,23 +310,5 @@ with open(csv_file, 'a') as f:
 
         i += 1
 
+print("Done.")
 
-
-## NOTES
-
-## What's left to do.
-
-## CSV - MANDATORY
-
-        # If time feautres aren't implemented, maybe have a column which says when the search was ran on?
-        # This is so that at least we can have a historical price trend.
-
-## Time features? 
-        
-        # Would be useful, but I need to phone a friend for that one.
-        # If that is implemented, then implement a checker to see if an ad has been sold, if it has, we can 
-        # mark when it was last seen. 
-
-## SAVED LINKS SECTION
-
-        # 
