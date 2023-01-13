@@ -46,16 +46,16 @@ if saved_checker == 0:
             else:
                 print("Wrong Input")
 
-        print("Engine Size From:")
+        print("Engine Size From (in cc's, example: 1200):")
         enginesizefrom = input()
 
         print("Engine Size To:")
         enginesizeto = input()
 
-        print("Year From")
+        print("Year From:")
         yearfrom = "year_from=" + str(input())
 
-        print("Year To")
+        print("Year To:")
         yearto = "year_to=" + str(input())
 
         print("OPTIONAL: Key Words? Suggested: 335i, GTI, M3, etc. One word only.")
@@ -80,12 +80,10 @@ if saved_checker == 0:
         if fourohfour == None:
             i += 1
         else: 
-            print("You've made an error in your selection, perhaps the make and model are wrong?") 
+            print("You've made an error in your selection, perhaps the make and model are wrong? Or there's none for sale.") 
      
 
 
-    if i == 1:
-        print("DONE")
 
     print("Would you like to save your search?: Y/N")
 
@@ -147,8 +145,7 @@ if saved_checker == True:
 
     search = search.split(",")
     
-    
-    print(search)
+
     
     make = search[1]
     model = search[2]
@@ -167,13 +164,13 @@ i = 0
 
 url = "https://www.donedeal.ie/cars/"+make+"/"+model+"/"+fueltype+keywords+"start="+str(i*30)+"&"+yearfrom+"&"+yearto+"&"+"engine_from="+enginesizefrom+"&"+"engine_to="+enginesizeto
 
-print(url)
 
 response = urllib.request.urlopen(url)
 webContent = response.read().decode('UTF-8')
     
 doc = BeautifulSoup(webContent, 'html.parser')
 
+print("Please wait...")
 
 if os.path.isdir("saved-cars") == False:
     os.mkdir("saved-cars")
@@ -280,15 +277,6 @@ with open(csv_file, 'a') as f:
             table[keys[z]] = results[z]
             z += 1
         
-        # print("Processing...")
-        # print(table["Make"])
-        # print(table["Model"])
-        # print(table["Year"])
-        # print(table["Mileage"])
-        # print(table["NCT Expiry"] + " NCT EXPIRY")
-        # print(table["Colour"] + " COLOUR")
-        # print(table["Price"])
-        # print(table["URL"])
 
         tablekey = []
         for key in table:
@@ -305,8 +293,7 @@ with open(csv_file, 'a') as f:
 
         if url not in urls:
             writer.writerow(results)
-
-        print("Processing...")
+        print(str(round((i / len(links)) * 100)) + "% " + "Done" )
 
         i += 1
 
