@@ -4,9 +4,19 @@ import os.path
 import urllib.request
 import os
 import csv
+from time import time
 
 path = os.path.dirname(__file__)
 os.chdir(path)
+
+def url_fetch():
+    url = "https://www.donedeal.ie/cars/"+make+"/"+model+"/"+fueltype+keywords+"start="+str(i*30)+"&"+yearfrom+"&"+yearto+"&"+"engine_from="+enginesizefrom+"&"+"engine_to="+enginesizeto
+
+    response = urllib.request.urlopen(url)
+    webContent = response.read().decode('UTF-8')
+
+    doc = BeautifulSoup(webContent, 'html.parser')
+    return doc
 
 
 # Search Logic
@@ -66,14 +76,8 @@ if saved_checker == 0:
         else:
             keywords = ""
 
-        url = "https://www.donedeal.ie/cars/"+make+"/"+model+"/"+fueltype+keywords+"start="+str(i*30)+"&"+yearfrom+"&"+yearto+"&"+"engine_from="+enginesizefrom+"&"+"engine_to="+enginesizeto
 
-
-        response = urllib.request.urlopen(url)
-        webContent = response.read().decode('UTF-8')
-
-
-        doc = BeautifulSoup(webContent, 'html.parser')
+        doc = url_fetch()
 
         fourohfour = doc.find("h2", class_="styles__Header-sc-dhlpsy-2 knmJSx")
 
@@ -109,7 +113,6 @@ if saved_checker == 0:
         with open("saved-searches.csv", "a") as f:
             writer = csv.writer(f)
             search = [int(len(texts)), make, model, fueltype, enginesizefrom, yearfrom, yearto, enginesizeto, keyword]
-            writer.writerow(search)
 
 i = 0
 
@@ -120,7 +123,7 @@ if saved_checker == True:
     print("Select a search using the number:")
 
 
-    print("---------------------------------------------------------")
+    print("_______________________________________________________________________")
 
     with open("saved-searches.csv", "r") as f:
         for words in f.readlines():
@@ -162,13 +165,7 @@ if saved_checker == True:
 
 i = 0
 
-url = "https://www.donedeal.ie/cars/"+make+"/"+model+"/"+fueltype+keywords+"start="+str(i*30)+"&"+yearfrom+"&"+yearto+"&"+"engine_from="+enginesizefrom+"&"+"engine_to="+enginesizeto
-
-
-response = urllib.request.urlopen(url)
-webContent = response.read().decode('UTF-8')
-    
-doc = BeautifulSoup(webContent, 'html.parser')
+doc = url_fetch()
 
 print("Please wait...")
 
@@ -181,32 +178,17 @@ else:
 
 # This block of texts gets me the amount of ads posted for this specific car
 
+
 tags = doc.find("h2", class_="styles__Details-sc-gp61km-12 bSMUto")
-rawads = tags.get_text() 
+ads = tags.get_text() 
+ads = ads.split()[0]
 
-
-z = 0
-ads = []
-
-while z < len(rawads):
-    if ord(rawads[z]) <= ord("9") and ord("0") <= ord(rawads[z]):
-       ads.append(rawads[z])
-       z += 1 
-    else:
-        z +=1
-
-ads = "".join(ads) # Gets me exact number of ads for this car
 
 links = []
 i = 0
 while i <= int(ads) // 30:
     
-    url = "https://www.donedeal.ie/cars/"+make+"/"+model+"/"+fueltype+keywords+"start="+str(i*30)+"&"+yearfrom+"&"+yearto+"&"+"engine_from="+enginesizefrom+"&"+"engine_to="+enginesizeto
-
-    response = urllib.request.urlopen(url)
-    webContent = response.read().decode('UTF-8')
-    
-    doc = BeautifulSoup(webContent, 'html.parser')
+    doc = url_fetch()
 
     rawlinks = []
     for a in doc.find_all('a', class_="Link__SLinkButton-sc-9jmsfg-0 emzqZy", href=True):
@@ -218,6 +200,7 @@ while i <= int(ads) // 30:
         z += 2
 
     i += 1
+
 
 # CSV LOGIC
 
@@ -231,6 +214,8 @@ print(os.listdir())
 
 csv_file = input() + ".csv"
 csv_columns = ["Make", "Model", "Year", "Mileage", "Colour", "NCT Expiry", "Price", "URL"]
+
+start_time = time()
 
 urls = []
 
@@ -246,9 +231,8 @@ with open(csv_file, 'a') as f:
 
 
 
-    while i < len(links):
-        url = links[i]
-
+    for url in links:
+        
         response = urllib.request.urlopen(url)
         webContent = response.read().decode('UTF-8')
 
@@ -276,10 +260,10 @@ with open(csv_file, 'a') as f:
         results.append(price.text)
         results.append(url)
 
-        z = 0 
+
         table = {}
-        while z < len(keys):
-            table[keys[z]] = results[z]
+        for z, key in enumerate(keys):
+            table[key] = results[z]
             z += 1
         
 
@@ -290,9 +274,9 @@ with open(csv_file, 'a') as f:
 
         z = 0
         results = []    
-        while z < len(tablekey):
-            if tablekey[z] in csv_columns:
-                results.append(table[tablekey[z]])
+        for result in tablekey:
+            if result in csv_columns:
+                results.append(table[result])
             
             z += 1
 
@@ -305,5 +289,8 @@ with open(csv_file, 'a') as f:
 
         i += 1
 
-print("Done.")
+print("Done!")
+end_time = time()
+
+print(end_time - start_time)
 
