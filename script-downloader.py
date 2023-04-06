@@ -9,7 +9,7 @@ from time import time
 path = os.path.dirname(__file__)
 os.chdir(path)
 
-def url_fetch():
+def url_fetch(i=0):
     url = "https://www.donedeal.ie/cars/"+make+"/"+model+"/"+fueltype+keywords+"start="+str(i*30)+"&"+yearfrom+"&"+yearto+"&"+"engine_from="+enginesizefrom+"&"+"engine_to="+enginesizeto
 
     response = urllib.request.urlopen(url)
@@ -17,88 +17,81 @@ def url_fetch():
 
     doc = BeautifulSoup(webContent, 'html.parser')
     return doc
+    
 
 
 # Search Logic
 
-saved_checker = ""
-
-print("Do you have a saved search?: Y/N")
-
-check = str(input())
+check = str(input("Do you have a saved search?: Y/N: "))
 
 if check == "N":
     saved_checker = False
 elif check == "Y":
     saved_checker = True
+    saving_checker = False
 
-i = 0
+while saved_checker == False:
 
-if saved_checker == 0:
+    print("Make")
+    make = input()
 
-    while i < 1: 
+    print("Model")
+    model = input()
 
-        print("Make")
-        make = input()
+    print("Fuel Type: A = Petrol B = Diesel")
+    fueltype = "X"
 
-        print("Model")
-        model = input()
-
-        print("Fuel Type: A = Petrol B = Diesel")
-        fueltype = "X"
-
-        while fueltype != "Petrol?" and fueltype != "Diesel?":
-            fuelchoice = input()
-            if fuelchoice == "A":
-                fueltype = "Petrol?"
-            elif fuelchoice == "B":
-                fueltype = "Diesel?"
-            else:
-                print("Wrong Input")
-
-        print("Engine Size From (in cc's, example: 1200):")
-        enginesizefrom = input()
-
-        print("Engine Size To:")
-        enginesizeto = input()
-
-        print("Year From:")
-        yearfrom = "year_from=" + str(input())
-
-        print("Year To:")
-        yearto = "year_to=" + str(input())
-
-        print("OPTIONAL: Key Words? Suggested: 335i, GTI, M3, etc. One word only.")
-        keyword = input()
-
-        if keyword != "":
-            keywords = "words=" + keyword + "&"
+    while fueltype != "Petrol?" and fueltype != "Diesel?":
+        fuelchoice = input()
+        if fuelchoice == "A":
+            fueltype = "Petrol?"
+        elif fuelchoice == "B":
+            fueltype = "Diesel?"
         else:
-            keywords = ""
+            print("Wrong Input")
+
+    print("Engine Size From (in cc's, example: 1200):")
+    enginesizefrom = input()
+
+    print("Engine Size To:")
+    enginesizeto = input()
+
+    print("Year From:")
+    yearfrom = "year_from=" + str(input())
+
+    print("Year To:")
+    yearto = "year_to=" + str(input())
+
+    print("OPTIONAL: Key Words? Suggested: 335i, GTI, M3, etc. One word only.")
+    keyword = input()
+
+    if keyword != "":
+        keywords = "words=" + keyword + "&"
+    else:
+        keywords = ""
 
 
-        doc = url_fetch()
+    doc = url_fetch(0)
 
-        fourohfour = doc.find("h2", class_="styles__Header-sc-dhlpsy-2 knmJSx")
+    error = doc.find("h2", class_="styles__Header-sc-dhlpsy-2 knmJSx")
 
-        if fourohfour == None:
-            i += 1
-        else: 
-            print("You've made an error in your selection, perhaps the make and model are wrong? Or there's none for sale.") 
+    if error == None:
+        saved_checker == True
+    else: 
+        print("You've made an error in your selection, perhaps the make and model are wrong? Or there's none for sale.") 
      
 
 
 
-    print("Would you like to save your search?: Y/N")
+print("Would you like to save your search?: Y/N")
 
-    saving_checker = ""
+if saving_checker != False:
     check2 = str(input())
     if check2 == "Y":
         saving_checker = True
     elif check2 == "N":
         saving_checker = False
-    
-
+        
     texts = []
     if saving_checker == True:
 
@@ -114,37 +107,24 @@ if saved_checker == 0:
             writer = csv.writer(f)
             search = [int(len(texts)), make, model, fueltype, enginesizefrom, yearfrom, yearto, enginesizeto, keyword]
 
-i = 0
-
-
 texts = []
 if saved_checker == True:
 
     print("Select a search using the number:")
-
 
     print("_______________________________________________________________________")
 
     with open("saved-searches.csv", "r") as f:
         for words in f.readlines():
             if words != "\n":
-                texts.append(words)
+                texts.append(words.rstrip())
     
     for searches in texts:
         print(searches.rstrip())
 
-    selection = input()
 
-    i = 0
-
-    while i < len(texts):
-        text = texts[i].split(",")
-
-        if selection == text[0]:
-            search = texts[i].rstrip()
-            i += 20000
-
-        i += 1
+    selection = int(input())
+    search = texts[selection]
 
     search = search.split(",")
     
@@ -163,9 +143,7 @@ if saved_checker == True:
     enginesizeto = search[7]
 
 
-i = 0
-
-doc = url_fetch()
+doc = url_fetch(0)
 
 print("Please wait...")
 
@@ -188,10 +166,10 @@ links = []
 i = 0
 while i <= int(ads) // 30:
     
-    doc = url_fetch()
+    doc = url_fetch(i)
 
     rawlinks = []
-    for a in doc.find_all('a', class_="Link__SLinkButton-sc-9jmsfg-0 emzqZy", href=True):
+    for a in doc.find_all('a', class_="Link__SLinkButton-sc-9jmsfg-0 emzqZy Listings__SLink-sc-1igquny-4 gaNrsC", href=True):
         rawlinks.append( a['href'])
 
     z = 0
@@ -201,7 +179,6 @@ while i <= int(ads) // 30:
 
     i += 1
 
-
 # CSV LOGIC
 
 i = 0
@@ -210,7 +187,6 @@ print("CSV File Name (keep the naming consistent if you want to add to the file)
 
 print("Cars tracked:")
 print(os.listdir())
-
 
 csv_file = input() + ".csv"
 csv_columns = ["Make", "Model", "Year", "Mileage", "Colour", "NCT Expiry", "Price", "URL"]
@@ -236,13 +212,11 @@ with open(csv_file, 'a') as f:
         response = urllib.request.urlopen(url)
         webContent = response.read().decode('UTF-8')
 
-
         doc = BeautifulSoup(webContent, 'html.parser')
-
 
         keyinfo = doc.find_all("div", class_="KeyInfoList__Text-sc-sxpiwc-2 dGjCWx")
         resultsinfo = doc.find_all("div", class_="KeyInfoList__Text-sc-sxpiwc-2 dQdfES")
-        
+
         price = doc.find("p", class_="Price__CurrentPrice-sc-e0e8wj-0 jsgPAs")
 
         keys = []
@@ -287,7 +261,6 @@ with open(csv_file, 'a') as f:
         if i % 10 == 0:
             print(str(round((i / len(links)) * 100)) + "% " + "Done" )
 
-        i += 1
 
 print("Done!")
 end_time = time()
