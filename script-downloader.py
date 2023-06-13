@@ -22,49 +22,32 @@ def url_fetch(i=0):
 
 # Search Logic
 
-check = str(input("Do you have a saved search?: Y/N: "))
+saved_search = str(input("Do you have a saved search?: Y/N: "))
 
-if check == "N":
-    saved_checker = False
-elif check == "Y":
-    saved_checker = True
-    saving_checker = False
+while saved_search == "N":
 
-while saved_checker == False:
-
-    print("Make")
-    make = input()
-
-    print("Model")
-    model = input()
-
-    print("Fuel Type: A = Petrol B = Diesel")
+    make = input("Make: ")
+    model = input("Model: ")
+    
     fueltype = "X"
-
-    while fueltype != "Petrol?" and fueltype != "Diesel?":
-        fuelchoice = input()
+    while fueltype != "Petrol?" and fueltype != "Diesel?":     
+        fuelchoice = input("Fuel Type: A = Petrol B = Diesel: ")
+        
         if fuelchoice == "A":
-            fueltype = "Petrol?"
+            fueltype = "Petrol?"  
         elif fuelchoice == "B":
-            fueltype = "Diesel?"
+            fueltype = "Diesel?"    
         else:
             print("Wrong Input")
 
-    print("Engine Size From (in cc's, example: 1200):")
-    enginesizefrom = input()
+    enginesizefrom = input("Engine Size From (in cc's, example: 1200): ")
+    enginesizeto = input("Engine Size To: ")
 
-    print("Engine Size To:")
-    enginesizeto = input()
+    yearfrom = "year_from=" + str(input("Year From: "))
+    yearto = "year_to=" + str(input("Year To: "))
 
-    print("Year From:")
-    yearfrom = "year_from=" + str(input())
-
-    print("Year To:")
-    yearto = "year_to=" + str(input())
-
-    print("OPTIONAL: Key Words? Suggested: 335i, GTI, M3, etc. One word only.")
-    keyword = input()
-
+    keyword = input("OPTIONAL: Key Words? Suggested: 335i, GTI, M3, etc. One word only. ")
+    
     if keyword != "":
         keywords = "words=" + keyword + "&"
     else:
@@ -74,26 +57,22 @@ while saved_checker == False:
     doc = url_fetch(0)
 
     error = doc.find("h2", class_="styles__Header-sc-dhlpsy-2 knmJSx")
-
+    
     if error == None:
-        saved_checker == True
+        saved_search = None
+        search_complete = True
     else: 
         print("You've made an error in your selection, perhaps the make and model are wrong? Or there's none for sale.") 
      
 
 
+# Saving Logic
 
-print("Would you like to save your search?: Y/N")
+if saved_search == None:
+    check2 = str(input("Would you like to save your search?, Y/N: "))
 
-if saving_checker != False:
-    check2 = str(input())
-    if check2 == "Y":
-        saving_checker = True
-    elif check2 == "N":
-        saving_checker = False
-        
     texts = []
-    if saving_checker == True:
+    if check2 == "Y":
 
         if os.path.isfile("saved-searches.csv") == True:
             with open("saved-searches.csv", "r") as f:
@@ -106,14 +85,18 @@ if saving_checker != False:
         with open("saved-searches.csv", "a") as f:
             writer = csv.writer(f)
             search = [int(len(texts)), make, model, fueltype, enginesizefrom, yearfrom, yearto, enginesizeto, keyword]
+            writer.writerow(search)
 
-texts = []
-if saved_checker == True:
+
+
+if saved_search == "Y":
 
     print("Select a search using the number:")
 
     print("_______________________________________________________________________")
 
+
+    texts = []
     with open("saved-searches.csv", "r") as f:
         for words in f.readlines():
             if words != "\n":
@@ -205,7 +188,7 @@ with open(csv_file, 'a') as f:
         for col in file:
             urls.append(col["URL"])
 
-
+    i = 0
 
     for url in links:
         
@@ -257,13 +240,16 @@ with open(csv_file, 'a') as f:
         if url not in urls:
             writer.writerow(results)
         
-        
+        i += 1
+
         if i % 10 == 0:
-            print(str(round((i / len(links)) * 100)) + "% " + "Done" )
+            print(str(round((i / len(links)) * 100)) + "% " + "Done")
 
 
-print("Done!")
+
 end_time = time()
 
-print(end_time - start_time)
+
+print("Parsing Time:", end_time - start_time)
+print("Done!")
 
