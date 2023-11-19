@@ -152,7 +152,7 @@ while i <= int(ads) // 30:
     doc = url_fetch(i)
 
     rawlinks = []
-    for a in doc.find_all('a', class_="Link__SLinkButton-sc-9jmsfg-0 emzqZy Listings__SLink-sc-1igquny-4 gaNrsC", href=True):
+    for a in doc.find_all('a', class_="Link__SLinkButton-sc-9jmsfg-0 emzqZy WithLinkstyled__SLink-sc-1n81fcg-0 jhmvmi", href=True):
         rawlinks.append( a['href'])
 
     z = 0
