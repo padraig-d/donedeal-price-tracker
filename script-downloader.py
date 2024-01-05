@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from datetime import date
 import os.path
-import urllib.request
+from urllib.request import Request, urlopen
 import os
 import csv
 from time import time
@@ -9,11 +9,15 @@ from time import time
 path = os.path.dirname(__file__)
 os.chdir(path)
 
-def url_fetch(i=0):
+headers = {'User-Agent': 'Mozilla/5.0'}
+
+
+def url_fetch(i=0, headers=headers):
     url = "https://www.donedeal.ie/cars/"+make+"/"+model+"/"+fueltype+keywords+"start="+str(i*30)+"&"+yearfrom+"&"+yearto+"&"+"engine_from="+enginesizefrom+"&"+"engine_to="+enginesizeto
 
-    response = urllib.request.urlopen(url)
-    webContent = response.read().decode('UTF-8')
+    req = Request(url, headers=headers)
+    req = urlopen(req)
+    webContent = req.read().decode('UTF-8')
 
     doc = BeautifulSoup(webContent, 'html.parser')
     return doc
