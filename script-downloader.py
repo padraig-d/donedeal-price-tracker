@@ -21,8 +21,14 @@ def url_fetch(i=0, headers=headers):
 
     doc = BeautifulSoup(webContent, 'html.parser')
     return doc
-    
 
+def adFetch(url):
+    req = Request(url, headers=headers)
+    req = urlopen(req)
+    webContent = req.read().decode('UTF-8')
+
+    doc = BeautifulSoup(webContent, 'html.parser')
+    return doc
 
 # Search Logic
 
@@ -201,8 +207,17 @@ with open(csv_file, 'a') as f:
 
     for url in links:
         
-        response = urllib.request.urlopen(url)
-        webContent = response.read().decode('UTF-8')
+
+        req = Request(url, headers=headers)
+        req = urlopen(req)
+        webContent = req.read().decode('UTF-8')
+
+        doc = BeautifulSoup(webContent, 'html.parser')
+        
+        
+        req = Request(url, headers=headers)
+        req = urlopen(req)
+        webContent = req.read().decode('UTF-8')
 
         doc = BeautifulSoup(webContent, 'html.parser')
 
