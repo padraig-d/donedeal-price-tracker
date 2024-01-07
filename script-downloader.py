@@ -164,14 +164,8 @@ while i <= int(ads) // 30:
     
     doc = url_fetch(i)
 
-    rawlinks = []
     for a in doc.find_all('a', class_="Link__SLinkButton-sc-9jmsfg-0 emzqZy SearchCardstyled__CardLink-sc-19e3gpz-4 fkYVTG", href=True):
-        rawlinks.append( a['href'])
-
-    z = 0
-    while z < len(rawlinks):
-        links.append(rawlinks[z])
-        z += 2
+        links.append( a['href'])
 
     i += 1
 
