@@ -148,6 +148,8 @@ tags = doc.find("h2", class_="styles__Details-sc-gp61km-12 bSMUto")
 ads = tags.get_text() 
 ads = ads.split()[0]
 
+print(ads)
+
 
 
 links = []
@@ -157,7 +159,7 @@ while i <= int(ads) // 30:
     doc = url_fetch(i)
 
     rawlinks = []
-    for a in doc.find_all('a', class_="Link__SLinkButton-sc-9jmsfg-0 emzqZy WithLinkstyled__SLink-sc-1n81fcg-0 jhmvmi", href=True):
+    for a in doc.find_all('a', class_="Link__SLinkButton-sc-9jmsfg-0 emzqZy SearchCardstyled__CardLink-sc-19e3gpz-4 fkYVTG", href=True):
         rawlinks.append( a['href'])
 
     z = 0
@@ -168,6 +170,8 @@ while i <= int(ads) // 30:
     i += 1
 
 # CSV LOGIC
+
+print(links)
 
 i = 0
 
